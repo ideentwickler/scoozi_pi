@@ -18,14 +18,27 @@ done
 echo "[kiosk] Netzwerk verfügbar."
 
 # Bildschirmschoner / Energiesparmodus deaktivieren
-xset s off
-xset -dpms
-xset s noblank
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    # Wayland (labwc): Idle-Management über labwc-Konfiguration
+    echo "[kiosk] Wayland erkannt – xset übersprungen."
+else
+    xset s off
+    xset -dpms
+    xset s noblank
+fi
 
 # Mauszeiger verstecken
 if [ "$HIDE_CURSOR" = true ]; then
-    if command -v unclutter &>/dev/null; then
-        unclutter -idle 0.1 -root &
+    if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+        # Wayland: seat-Konfiguration für labwc
+        mkdir -p "$HOME/.config/labwc"
+        if ! grep -q "hide-cursor-timeout" "$HOME/.config/labwc/rc.xml" 2>/dev/null; then
+            echo "[kiosk] Cursor-Hiding für Wayland nicht aktiv – siehe labwc rc.xml"
+        fi
+    else
+        if command -v unclutter &>/dev/null; then
+            unclutter -idle 0.1 -root &
+        fi
     fi
 fi
 
@@ -38,8 +51,24 @@ fi
 
 echo "[kiosk] Starte Chromium: $PUB_URL"
 
+# Chromium-Binary erkennen
+if command -v chromium-browser &>/dev/null; then
+    CHROMIUM_BIN="chromium-browser"
+elif command -v chromium &>/dev/null; then
+    CHROMIUM_BIN="chromium"
+else
+    echo "[kiosk] FEHLER: Kein Chromium gefunden!"
+    exit 1
+fi
+
+# Wayland-spezifische Flags
+WAYLAND_FLAGS=""
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    WAYLAND_FLAGS="--ozone-platform=wayland --enable-features=UseOzonePlatform"
+fi
+
 # Chromium im Kiosk-Modus starten
-exec chromium-browser \
+exec "$CHROMIUM_BIN" \
     --kiosk \
     --noerrdialogs \
     --disable-infobars \
@@ -49,4 +78,5 @@ exec chromium-browser \
     --start-fullscreen \
     --check-for-update-interval=31536000 \
     --disable-component-update \
+    $WAYLAND_FLAGS \
     "$PUB_URL"
