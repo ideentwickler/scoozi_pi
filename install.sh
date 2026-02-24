@@ -50,6 +50,21 @@ if [ "$SESSION_TYPE" = "wayland" ]; then
         echo "$KIOSK_LINE" >> "$AUTOSTART_FILE"
     fi
     chmod +x "$AUTOSTART_FILE"
+
+    # Bildschirm-Idle deaktivieren (labwc rc.xml)
+    RCXML_FILE="$LABWC_DIR/rc.xml"
+    if [ ! -f "$RCXML_FILE" ]; then
+        echo "[install] Erstelle labwc rc.xml – deaktiviere Idle-Timeout..."
+        SYSTEM_RCXML="/etc/xdg/labwc/rc.xml"
+        if [ -f "$SYSTEM_RCXML" ]; then
+            cp "$SYSTEM_RCXML" "$RCXML_FILE"
+            # Idle-Abschnitt vor </openbox_config> einfügen
+            sed -i 's|</openbox_config>|  <idle>\n    <idleTimeoutMs>0</idleTimeoutMs>\n  </idle>\n\n</openbox_config>|' "$RCXML_FILE"
+        fi
+    elif ! grep -q "idleTimeoutMs" "$RCXML_FILE"; then
+        echo "[install] Füge Idle-Timeout-Deaktivierung zu rc.xml hinzu..."
+        sed -i 's|</openbox_config>|  <idle>\n    <idleTimeoutMs>0</idleTimeoutMs>\n  </idle>\n\n</openbox_config>|' "$RCXML_FILE"
+    fi
 else
     # X11/GNOME: XDG Autostart
     AUTOSTART_DIR="$HOME/.config/autostart"
