@@ -35,11 +35,16 @@ if [ "$SESSION_TYPE" = "wayland" ]; then
 
     AUTOSTART_FILE="$LABWC_DIR/autostart"
     KIOSK_LINE="$SCRIPT_DIR/kiosk.sh &"
+    SYSTEM_AUTOSTART="/etc/xdg/labwc/autostart"
 
     if [ -f "$AUTOSTART_FILE" ] && grep -q "kiosk.sh" "$AUTOSTART_FILE"; then
         echo "[install] labwc autostart bereits konfiguriert."
     else
-        echo "[install] Füge kiosk.sh zu labwc autostart hinzu..."
+        echo "[install] Erstelle labwc autostart mit Kiosk-Eintrag..."
+        # System-Autostart als Basis kopieren, dann Kiosk hinzufügen
+        if [ -f "$SYSTEM_AUTOSTART" ]; then
+            cp "$SYSTEM_AUTOSTART" "$AUTOSTART_FILE"
+        fi
         echo "" >> "$AUTOSTART_FILE"
         echo "# Kiosk Mode" >> "$AUTOSTART_FILE"
         echo "$KIOSK_LINE" >> "$AUTOSTART_FILE"
