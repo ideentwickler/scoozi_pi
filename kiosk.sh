@@ -78,5 +78,6 @@ exec "$CHROMIUM_BIN" \
     --start-fullscreen \
     --check-for-update-interval=31536000 \
     --disable-component-update \
+    --password-store=basic \
     $WAYLAND_FLAGS \
     "$PUB_URL"
