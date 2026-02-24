@@ -44,6 +44,7 @@ if [ "$SESSION_TYPE" = "wayland" ]; then
         echo "# Kiosk Mode" >> "$AUTOSTART_FILE"
         echo "$KIOSK_LINE" >> "$AUTOSTART_FILE"
     fi
+    chmod +x "$AUTOSTART_FILE"
 else
     # X11/GNOME: XDG Autostart
     AUTOSTART_DIR="$HOME/.config/autostart"
