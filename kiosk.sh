@@ -79,5 +79,8 @@ exec "$CHROMIUM_BIN" \
     --check-for-update-interval=31536000 \
     --disable-component-update \
     --password-store=basic \
+    --use-fake-ui-for-media-stream \
+    --disable-notifications \
+    --autoplay-policy=no-user-gesture-required \
     $WAYLAND_FLAGS \
     "$PUB_URL"
