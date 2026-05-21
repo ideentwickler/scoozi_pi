@@ -17,8 +17,8 @@
 - Repo auf Pi: `~/scoozi_pi`
 
 ## Architektur
-- `config.sh` – Konfiguration (Slide-URL, Cursor-Hiding, Tailscale-Hostname)
-- `setup.sh` – Bootstrap nach Neu-Flash: Tailscale installieren + verbinden, dann `install.sh`
+- `config.sh` – Konfiguration (Slide-URL, Cursor-Hiding, WLAN, Tailscale-Hostname)
+- `setup.sh` – Bootstrap nach Neu-Flash: WLAN anlegen, Tailscale installieren + verbinden, dann `install.sh`
 - `kiosk.sh` – Browser-Startscript (Netzwerk-Check, Chromium Kiosk-Modus)
 - `install.sh` – Installer (Autostart, Desktop-Autologin, HDMI-Blanking)
 - `uninstall.sh` – Deinstallation

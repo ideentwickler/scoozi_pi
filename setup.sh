@@ -56,6 +56,31 @@ if [ -z "$AUTHKEY" ]; then
     exit 1
 fi
 
+# --- Primaeres WLAN konfigurieren --------------------------------------------
+# Legt das Ladenlokal-WLAN mit hoher Prioritaet an. Ein vorhandener
+# iPhone-Hotspot bleibt als Fallback erhalten. Das WLAN wird NICHT sofort
+# aktiviert (das wuerde eine SSH-Sitzung ueber den Hotspot trennen) – es greift
+# spaetestens nach dem abschliessenden Reboot.
+if command -v nmcli &>/dev/null; then
+    echo "[setup] Konfiguriere primaeres WLAN: $WIFI_SSID"
+    if nmcli -t -f NAME connection show | grep -qx "$WIFI_SSID"; then
+        sudo nmcli connection modify "$WIFI_SSID" \
+            wifi-sec.key-mgmt wpa-psk \
+            wifi-sec.psk "$WIFI_PSK" \
+            connection.autoconnect yes \
+            connection.autoconnect-priority 100
+    else
+        sudo nmcli connection add type wifi con-name "$WIFI_SSID" \
+            ssid "$WIFI_SSID" \
+            wifi-sec.key-mgmt wpa-psk \
+            wifi-sec.psk "$WIFI_PSK" \
+            connection.autoconnect yes \
+            connection.autoconnect-priority 100
+    fi
+else
+    echo "[setup] WARNUNG: nmcli nicht gefunden – WLAN nicht konfiguriert."
+fi
+
 # --- System vorbereiten ------------------------------------------------------
 echo "[setup] Aktualisiere Paketquellen..."
 sudo apt-get update -qq

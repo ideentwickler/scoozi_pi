@@ -24,9 +24,10 @@ sudo reboot
 
 `setup.sh` erledigt alles in einem Rutsch:
 
-1. Paketquellen aktualisieren
-2. **Tailscale** installieren und mit dem Tailnet verbinden (Tailscale SSH aktiv)
-3. **Kiosk-Modus** installieren (Autostart, Desktop-Autologin, HDMI-Blanking aus)
+1. **Primäres WLAN** (`Scoozi_Devices`) mit hoher Priorität anlegen – iPhone-Hotspot bleibt als Fallback
+2. Paketquellen aktualisieren
+3. **Tailscale** installieren und mit dem Tailnet verbinden (Tailscale SSH aktiv)
+4. **Kiosk-Modus** installieren (Autostart, Desktop-Autologin, HDMI-Blanking aus)
 
 Nach dem Reboot bootet der Pi automatisch in den Desktop und startet Chromium im Kiosk-Modus.
 
@@ -54,6 +55,8 @@ Einstellungen in `config.sh`:
 |---|---|
 | `SLIDE_URL` | Google Slides URL (wird automatisch auf `/pub` umgeschrieben) |
 | `HIDE_CURSOR` | Mauszeiger verstecken (`true`/`false`) |
+| `WIFI_SSID` | Primäres WLAN (Ladenlokal) |
+| `WIFI_PSK` | WLAN-Passwort |
 | `TS_HOSTNAME` | Hostname des Pi im Tailnet (leer = System-Hostname) |
 
 ## Nur Kiosk installieren (ohne Tailscale)
