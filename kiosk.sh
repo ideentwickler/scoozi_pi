@@ -6,6 +6,12 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/config.sh"
 
+# Session-Typ ermitteln – Fallback auf labwc-Erkennung, falls XDG_SESSION_TYPE leer
+SESSION_TYPE="${XDG_SESSION_TYPE:-}"
+if [ -z "$SESSION_TYPE" ] && command -v labwc &>/dev/null; then
+    SESSION_TYPE="wayland"
+fi
+
 # Google Slides URL in Präsentations-URL umwandeln
 # /edit?... oder /pub?... wird zu /pub?start=true&loop=true&delayms=5000
 PUB_URL=$(echo "$SLIDE_URL" | sed 's|/edit.*|/pub?start=true\&loop=true\&delayms=5000|' | sed 's|/pub.*|/pub?start=true\&loop=true\&delayms=5000|')
@@ -18,7 +24,7 @@ done
 echo "[kiosk] Netzwerk verfügbar."
 
 # Bildschirmschoner / Energiesparmodus deaktivieren
-if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+if [ "$SESSION_TYPE" = "wayland" ]; then
     # Wayland (labwc): Idle-Management über labwc-Konfiguration
     echo "[kiosk] Wayland erkannt – xset übersprungen."
 else
@@ -29,7 +35,7 @@ fi
 
 # Mauszeiger verstecken
 if [ "$HIDE_CURSOR" = true ]; then
-    if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+    if [ "$SESSION_TYPE" = "wayland" ]; then
         # Wayland: seat-Konfiguration für labwc
         mkdir -p "$HOME/.config/labwc"
         if ! grep -q "hide-cursor-timeout" "$HOME/.config/labwc/rc.xml" 2>/dev/null; then
@@ -63,7 +69,7 @@ fi
 
 # Wayland-spezifische Flags
 WAYLAND_FLAGS=""
-if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+if [ "$SESSION_TYPE" = "wayland" ]; then
     WAYLAND_FLAGS="--ozone-platform=wayland --enable-features=UseOzonePlatform"
 fi
 

@@ -7,3 +7,10 @@ SLIDE_URL="https://docs.google.com/presentation/d/e/2PACX-1vSkuEFjd73CVH1MaXYf2F
 
 # Mauszeiger verstecken (true/false)
 HIDE_CURSOR=true
+
+# -----------------------------------------------------------------------------
+# Tailscale
+# -----------------------------------------------------------------------------
+# Hostname, unter dem der Pi im Tailnet erscheint.
+# Leer lassen ("") -> Tailscale verwendet den System-Hostnamen.
+TS_HOSTNAME="scoozi-raspberry"

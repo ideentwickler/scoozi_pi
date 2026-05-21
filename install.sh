@@ -14,7 +14,17 @@ echo "======================================="
 echo ""
 
 # Session-Typ erkennen
-SESSION_TYPE="${XDG_SESSION_TYPE:-x11}"
+# Ueber SSH ist XDG_SESSION_TYPE leer -> dann anhand von labwc entscheiden,
+# damit der Autostart auch bei einem rein per SSH ausgefuehrten Setup stimmt.
+SESSION_TYPE="${XDG_SESSION_TYPE:-}"
+if [ -z "$SESSION_TYPE" ]; then
+    if [ -d /etc/xdg/labwc ] || command -v labwc &>/dev/null; then
+        SESSION_TYPE="wayland"
+    else
+        SESSION_TYPE="x11"
+    fi
+    echo "[install] XDG_SESSION_TYPE leer (SSH-Sitzung?) – erkannt: $SESSION_TYPE"
+fi
 echo "[install] Session-Typ: $SESSION_TYPE"
 
 # unclutter installieren (nur für X11 – unter Wayland nicht nötig)
@@ -78,6 +88,12 @@ Comment=Google Slides Kiosk Mode
 Exec=$SCRIPT_DIR/kiosk.sh
 X-GNOME-Autostart-enabled=true
 EOF
+fi
+
+# Desktop-Autologin aktivieren, damit labwc + Autostart ohne Login starten
+if command -v raspi-config &>/dev/null; then
+    echo "[install] Aktiviere Desktop-Autologin..."
+    sudo raspi-config nonint do_boot_behaviour B4
 fi
 
 # Bildschirm-Abschaltung deaktivieren (config.txt)
